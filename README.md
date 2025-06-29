@@ -1,6 +1,6 @@
 # discord-ws-client
-DiscordのWebSocketを使うクライアント
-https://github.com/taka-4602/discord-http-client
+DiscordのWebSocketを使うクライアント  
+https://github.com/taka-4602/discord-http-client  
 これにWebSocketをつけた
 ## 機能
 - ~~No WebSocket~~
