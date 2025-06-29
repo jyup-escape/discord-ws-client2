@@ -1470,6 +1470,7 @@
                     case 10: // Hello
                         console.log('Hello受信');
                         this.startHeartbeat(d.heartbeat_interval);
+                        this.lastHeartbeatAck = true;
                         this.sendIdentify();
                         break;
                         
@@ -1501,7 +1502,20 @@
                         break;
                 }
             }
-            
+
+            updateSendButtonState(isSending) {
+                const btn = document.getElementById('submitBtn');
+                if (!btn) return;
+                btn.disabled = isSending;
+                if (isSending) {
+                    btn.classList.add('loading');
+                    btn.textContent = '送信中…';
+                } else {
+                    btn.classList.remove('loading');
+                    btn.textContent = '送信';
+                }
+            }
+
             async handleNewMessage(messageData) {
                 this.saveMessagesToCache(messageData.channel_id, [messageData]);
                 
@@ -1566,7 +1580,7 @@
                     <div class="message-content">
                         <div class="message-header">
                         <span class="message-author">
-                            ${msg.author.global_name || msg.author.username}
+                            ${msg.author.global_name || msg.author.username}${msg.author.global_name ? ` (${msg.author.username})` : ''}
                         </span>
                         <span class="message-timestamp">
                             ${this.formatTimestamp(msg.timestamp)}
@@ -1618,7 +1632,7 @@
 
 
             startHeartbeat(interval) {
-                this.clearHeartbeat();
+                //this.clearHeartbeat();
                 this.heartbeatInterval = setInterval(() => {
                     if (!this.lastHeartbeatAck) {
                         console.log('ハートビートACKが返ってこない、再接続します');
@@ -1638,7 +1652,7 @@
 
             sendHeartbeat() {
                 if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                    this.lastHeartbeatAck = false;
+                    //this.lastHeartbeatAck = false;
                     this.ws.send(JSON.stringify({
                         op: 1,
                         d: this.sequenceNumber
@@ -2406,7 +2420,6 @@
                 const chatHeaderHTML = `<div class="chat-header"><button class="back-btn" onclick="client.unselectChannel()">←</button><div class="chat-title"># ${channelName}</div><div class="chat-header-actions">${inviteButtonHTML}<button class="btn btn-secondary btn-header" onclick="client.fetchMessages('${this.selectedChannel.id}')" ${this.isLoading ? 'disabled' : ''}>${this.isLoading ? '読込中' : '🔄 更新'}</button><button class="btn btn-header" onclick="client.exportMessages()">エクスポート</button></div></div>`;
                 const chatMessagesWrapperHTML = `<div class="chat-messages" id="chat-messages">${chatContentHTML}</div>`;
                 const chatInputAreaHTML = `<div class="chat-input-area">${replyingToHTML}${imagePreviewHTML}<form id="sendMessageForm"><button type="button" class="file-input-btn" onclick="document.getElementById('fileInput').click()">📎</button><input type="file" id="fileInput" class="file-input-hidden" multiple accept="image/*"><input type="text" id="messageInput" class="message-input" placeholder="#${channelName} へメッセージを送信" autocomplete="off"><button type="submit" id="sendBtn" class="send-btn" ${this.isSending ? 'disabled' : ''}>${this.isSending ? '送信中...' : '送信'}</button></form></div>`;
-
                 return `<div class="chat-area-wrapper ${animationClass}">${chatHeaderHTML}${chatMessagesWrapperHTML}${chatInputAreaHTML}</div>`;
             }
 
