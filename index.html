@@ -1810,7 +1810,7 @@
             }
 
             async fetchMessages(channelId, { beforeId = null } = {}) {
-                isSending = false;
+                this.isSending = false;
                 const stateKey = beforeId ? 'isFetchingOlder' : 'isLoading';
                 if (this[stateKey]) return;
 
