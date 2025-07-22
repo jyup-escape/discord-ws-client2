@@ -2072,6 +2072,8 @@
                         const payload = { content: content };
                         if (messageReference) {
                             payload.message_reference = { message_id: messageReference };
+                            payload.allowed_mentions = { parse: ["users", "roles", "everyone"], replied_user: false };
+                            payload.flags = 0;
                         }
 
                         const res = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
@@ -2118,6 +2120,8 @@
                 }
                 if (messageReference) {
                     payload.message_reference = { message_id: messageReference };
+                    payload.allowed_mentions = { parse: ["users", "roles", "everyone"], replied_user: false };
+                    payload.flags = 0;
                 }
 
                 formData.append('payload_json', JSON.stringify(payload));
