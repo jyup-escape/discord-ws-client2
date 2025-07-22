@@ -1285,9 +1285,16 @@
 
                 setTimeout(() => {
                     const messageInput = document.getElementById('messageInput');
-                    if (messageInput && !messageInput._pasteHandlerSet) {
+                    const sendMessageForm = document.getElementById('sendMessageForm');
+                    if (messageInput && !messageInput._inputHandlersSet && sendMessageForm) {
                         messageInput.addEventListener('paste', (event) => this.handleImagePaste(event));
-                        messageInput._pasteHandlerSet = true;
+                        messageInput.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendMessageForm.requestSubmit();
+                            }
+                        });
+                        messageInput._inputHandlersSet = true;
                     }
                 }, 0);
             }
@@ -2567,15 +2574,19 @@
                         if (client.selectedChannel) {
                             client.sendMessage(client.selectedChannel.id, input.value, client.replyingTo ? client.replyingTo.id : null);
                         }
-                        if (input) {
-                            input.addEventListener('keydown', function (e) {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    sendMessageForm.requestSubmit();
-                                }
-                            });
-                        }
                     };
+
+                    const input = document.getElementById('messageInput');
+                    if (input && !input._inputHandlersSet) {
+                        input.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendMessageForm.requestSubmit();
+                            }
+                        });
+                        input.addEventListener('paste', (event) => client.handleImagePaste(event));
+                        input._inputHandlersSet = true;
+                    }
                 }
 
                 if (this.recentlyAddedMessageIds.size > 0) {
