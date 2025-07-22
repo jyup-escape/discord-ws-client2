@@ -12,6 +12,7 @@ https://github.com/taka-4602/discord-http-client
 - オフライン表示で接続
 ## じゅぴ変更点
 - ペーストで画像を添付
+
 AIといっしょに作った (AIすごい)
 ↑
 たかに感謝
