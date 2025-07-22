@@ -592,6 +592,7 @@
             color: var(--text-primary);
             font-size: 14px;
             min-width: 0;
+            resize: none;
         }
 
         .send-btn {
@@ -1098,30 +1099,7 @@
                 // メッセージ入力欄の画像ペースト対応
                 const messageInput = document.getElementById('messageInput');
                 if (messageInput) {
-                    messageInput.addEventListener('paste', (event) => {
-                        if (!event.clipboardData) return;
-                        const items = event.clipboardData.items;
-                        const imageFiles = [];
-                        for (let i = 0; i < items.length; i++) {
-                            const item = items[i];
-                            if (item.kind === 'file' && item.type.startsWith('image/')) {
-                                const file = item.getAsFile();
-                                if (file) imageFiles.push(file);
-                            }
-                        }
-                        if (imageFiles.length > 0) {
-                            // ファイルサイズ制限
-                            const maxSize = 50 * 1024 * 1024;
-                            const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
-                            if (oversizedFiles.length > 0) {
-                                this.showCustomMessageBox('エラー', 'ファイルサイズは50MB以下にしてください。');
-                                return;
-                            }
-                            this.selectedFiles = [...this.selectedFiles, ...imageFiles];
-                            this.render();
-                            event.preventDefault();
-                        }
-                    });
+                    messageInput.addEventListener('paste', (event) => this.handleImagePaste(event));
                 }
             }
 
@@ -1308,29 +1286,7 @@
                 setTimeout(() => {
                     const messageInput = document.getElementById('messageInput');
                     if (messageInput && !messageInput._pasteHandlerSet) {
-                        messageInput.addEventListener('paste', (event) => {
-                            if (!event.clipboardData) return;
-                            const items = event.clipboardData.items;
-                            const imageFiles = [];
-                            for (let i = 0; i < items.length; i++) {
-                                const item = items[i];
-                                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                                    const file = item.getAsFile();
-                                    if (file) imageFiles.push(file);
-                                }
-                            }
-                            if (imageFiles.length > 0) {
-                                const maxSize = 50 * 1024 * 1024;
-                                const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
-                                if (oversizedFiles.length > 0) {
-                                    this.showCustomMessageBox('エラー', 'ファイルサイズは50MB以下にしてください。');
-                                    return;
-                                }
-                                this.selectedFiles = [...this.selectedFiles, ...imageFiles];
-                                this.render();
-                                event.preventDefault();
-                            }
-                        });
+                        messageInput.addEventListener('paste', (event) => this.handleImagePaste(event));
                         messageInput._pasteHandlerSet = true;
                     }
                 }, 0);
@@ -2069,6 +2025,30 @@
             removeSelectedFile(index) {
                 this.selectedFiles.splice(index, 1);
                 this.render();
+            }
+
+            handleImagePaste(event) {
+                if (!event.clipboardData) return;
+                const items = event.clipboardData.items;
+                const imageFiles = [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    if (item.kind === 'file' && item.type.startsWith('image/')) {
+                        const file = item.getAsFile();
+                        if (file) imageFiles.push(file);
+                    }
+                }
+                if (imageFiles.length > 0) {
+                    const maxSize = 50 * 1024 * 1024;
+                    const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
+                    if (oversizedFiles.length > 0) {
+                        this.showCustomMessageBox('エラー', 'ファイルサイズは50MB以下にしてください。');
+                        return;
+                    }
+                    this.selectedFiles = [...this.selectedFiles, ...imageFiles];
+                    this.render();
+                    event.preventDefault();
+                }
             }
 
             async sendMessage(channelId, content, messageReference = null) {
