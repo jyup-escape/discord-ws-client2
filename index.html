@@ -1096,15 +1096,11 @@
                     loginFormElement.classList.add('initial-entry');
                 }
 
-
-                // メッセージ入力欄の画像ペースト対応はHTML側のonpaste属性で処理
-
                 // メッセージ入力欄の画像ペースト対応
                 const messageInput = document.getElementById('messageInput');
                 if (messageInput) {
                     messageInput.addEventListener('paste', (event) => this.handleImagePaste(event));
                 }
-
             }
 
             loadTheme() {
@@ -1287,8 +1283,6 @@
                     </div>
         `;
 
-                // textarea側のonpaste属性でハンドラを呼び出すため、ここでのイベント登録は不要
-
                 setTimeout(() => {
                     const messageInput = document.getElementById('messageInput');
                     if (messageInput && !messageInput._pasteHandlerSet) {
@@ -1296,7 +1290,6 @@
                         messageInput._pasteHandlerSet = true;
                     }
                 }, 0);
-
             }
 
             loadCacheFromStorage() {
@@ -2036,40 +2029,19 @@
 
             handleImagePaste(event) {
                 if (!event.clipboardData) return;
-
-                const items = Array.from(event.clipboardData.items || []);
-                const files = Array.from(event.clipboardData.files || []);
-                const imageFiles = [];
-
-                for (const item of items) {
-
                 const items = event.clipboardData.items;
                 const imageFiles = [];
                 for (let i = 0; i < items.length; i++) {
                     const item = items[i];
-
                     if (item.kind === 'file' && item.type.startsWith('image/')) {
                         const file = item.getAsFile();
                         if (file) imageFiles.push(file);
                     }
                 }
-
-
-                for (const file of files) {
-                    if (file.type && file.type.startsWith('image/')) {
-                        imageFiles.push(file);
-                    }
-                }
-
-                if (imageFiles.length > 0) {
-                    const maxSize = 50 * 1024 * 1024;
-                    const oversized = imageFiles.filter(f => f.size > maxSize);
-
                 if (imageFiles.length > 0) {
                     const maxSize = 50 * 1024 * 1024;
                     const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
                     if (oversizedFiles.length > 0) {
-
                         this.showCustomMessageBox('エラー', 'ファイルサイズは50MB以下にしてください。');
                         return;
                     }
@@ -2546,7 +2518,7 @@
 
                 const chatHeaderHTML = `<div class="chat-header"><button class="back-btn" onclick="client.unselectChannel()">←</button><div class="chat-title"># ${channelName}</div><div class="chat-header-actions">${inviteButtonHTML}<button class="btn btn-secondary btn-header" onclick="client.fetchMessages('${this.selectedChannel.id}')" ${this.isLoading ? 'disabled' : ''}>${this.isLoading ? '読込中' : '🔄 更新'}</button><button class="btn btn-header" onclick="client.exportMessages()">エクスポート</button></div></div>`;
                 const chatMessagesWrapperHTML = `<div class="chat-messages" id="chat-messages">${chatContentHTML}</div>`;
-                const chatInputAreaHTML = `<div class="chat-input-area">${replyingToHTML}${imagePreviewHTML}<form id="sendMessageForm"><button type="button" class="file-input-btn" onclick="document.getElementById('fileInput').click()">📎</button><input type="file" id="fileInput" class="file-input-hidden" multiple accept="image/*"><textarea id="messageInput" class="message-input" placeholder="#${channelName} へメッセージを送信" autocomplete="off" rows="1" onpaste="client.handleImagePaste(event)"></textarea><button type="submit" id="sendBtn" class="send-btn" ${this.isSending ? 'disabled' : ''}>${this.isSending ? '送信中...' : '送信'}</button></form></div>`;
+                const chatInputAreaHTML = `<div class="chat-input-area">${replyingToHTML}${imagePreviewHTML}<form id="sendMessageForm"><button type="button" class="file-input-btn" onclick="document.getElementById('fileInput').click()">📎</button><input type="file" id="fileInput" class="file-input-hidden" multiple accept="image/*"><textarea id="messageInput" class="message-input" placeholder="#${channelName} へメッセージを送信" autocomplete="off" rows="1"></textarea><button type="submit" id="sendBtn" class="send-btn" ${this.isSending ? 'disabled' : ''}>${this.isSending ? '送信中...' : '送信'}</button></form></div>`;
                 return `<div class="chat-area-wrapper ${animationClass}">${chatHeaderHTML}${chatMessagesWrapperHTML}${chatInputAreaHTML}</div>`;
             }
 
