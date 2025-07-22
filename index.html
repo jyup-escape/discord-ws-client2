@@ -1096,7 +1096,15 @@
                     loginFormElement.classList.add('initial-entry');
                 }
 
+
                 // メッセージ入力欄の画像ペースト対応はHTML側のonpaste属性で処理
+
+                // メッセージ入力欄の画像ペースト対応
+                const messageInput = document.getElementById('messageInput');
+                if (messageInput) {
+                    messageInput.addEventListener('paste', (event) => this.handleImagePaste(event));
+                }
+
             }
 
             loadTheme() {
@@ -1280,6 +1288,15 @@
         `;
 
                 // textarea側のonpaste属性でハンドラを呼び出すため、ここでのイベント登録は不要
+
+                setTimeout(() => {
+                    const messageInput = document.getElementById('messageInput');
+                    if (messageInput && !messageInput._pasteHandlerSet) {
+                        messageInput.addEventListener('paste', (event) => this.handleImagePaste(event));
+                        messageInput._pasteHandlerSet = true;
+                    }
+                }, 0);
+
             }
 
             loadCacheFromStorage() {
@@ -2019,16 +2036,24 @@
 
             handleImagePaste(event) {
                 if (!event.clipboardData) return;
+
                 const items = Array.from(event.clipboardData.items || []);
                 const files = Array.from(event.clipboardData.files || []);
                 const imageFiles = [];
 
                 for (const item of items) {
+
+                const items = event.clipboardData.items;
+                const imageFiles = [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+
                     if (item.kind === 'file' && item.type.startsWith('image/')) {
                         const file = item.getAsFile();
                         if (file) imageFiles.push(file);
                     }
                 }
+
 
                 for (const file of files) {
                     if (file.type && file.type.startsWith('image/')) {
@@ -2039,7 +2064,12 @@
                 if (imageFiles.length > 0) {
                     const maxSize = 50 * 1024 * 1024;
                     const oversized = imageFiles.filter(f => f.size > maxSize);
-                    if (oversized.length > 0) {
+
+                if (imageFiles.length > 0) {
+                    const maxSize = 50 * 1024 * 1024;
+                    const oversizedFiles = imageFiles.filter(file => file.size > maxSize);
+                    if (oversizedFiles.length > 0) {
+
                         this.showCustomMessageBox('エラー', 'ファイルサイズは50MB以下にしてください。');
                         return;
                     }
