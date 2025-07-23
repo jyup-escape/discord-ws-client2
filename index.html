@@ -1715,7 +1715,7 @@
 
 
             startHeartbeat(interval) {
-                //this.clearHeartbeat();
+                this.clearHeartbeat();
                 this.heartbeatInterval = setInterval(() => {
                     if (!this.lastHeartbeatAck) {
                         console.log('ハートビートACKが返ってこない、再接続します');
@@ -1735,7 +1735,7 @@
 
             sendHeartbeat() {
                 if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                    //this.lastHeartbeatAck = false;
+                    this.lastHeartbeatAck = false;
                     this.ws.send(JSON.stringify({
                         op: 1,
                         d: this.sequenceNumber
