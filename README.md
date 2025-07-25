@@ -16,3 +16,6 @@ https://github.com/taka-4602/discord-http-client
 AIといっしょに作った (AIすごい)
 ↑
 たかに感謝
+
+# 現時点でのバグ
+新しく来たメッセージ読み取れん
