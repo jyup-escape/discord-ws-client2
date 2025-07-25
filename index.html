@@ -1767,7 +1767,8 @@
                             capabilities: 30719,
                             api_code_version: 1,
                             user_guild_settings_version: 1057,
-                            user_settings_version: 3642
+                            user_settings_version: 3642,
+                            intents: 513
                         }
                     };
 
@@ -1905,7 +1906,7 @@
                     }
                 }
             }
-
+// メッセージ読み込みとか
             async fetchMessages(channelId, { beforeId = null } = {}) {
                 this.isSending = false;
                 const stateKey = beforeId ? 'isFetchingOlder' : 'isLoading';
@@ -1949,6 +1950,7 @@
                     } else {
                         const errData = await res.json();
                         throw new Error(errData.message || 'メッセージの取得に失敗しました');
+                        console.error('メッセージ取得エラー:', errData);
                     }
                 } catch (e) {
                     this.error = e.message;
@@ -2073,7 +2075,6 @@
                         if (messageReference) {
                             payload.message_reference = { message_id: messageReference };
                             payload.allowed_mentions = { parse: ["users", "roles", "everyone"], replied_user: false };
-                            payload.flags = 0;
                         }
 
                         const res = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
@@ -2121,7 +2122,6 @@
                 if (messageReference) {
                     payload.message_reference = { message_id: messageReference };
                     payload.allowed_mentions = { parse: ["users", "roles", "everyone"], replied_user: false };
-                    payload.flags = 0;
                 }
 
                 formData.append('payload_json', JSON.stringify(payload));
